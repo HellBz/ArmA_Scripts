@@ -86,9 +86,21 @@ _checkTimeRange = {
 	_isTime
 };
 
+_checkdb = "extDB3" callExtension "9:VERSION";
+if (_checkdb == "") then
+{
+	FN_CALL_ExtDB_TIME = {"extDB2" callExtension format["9:TIME:%1",_realTimeOffset] };
+} else {
+	FN_CALL_ExtDB_TIME = {"extDB3" callExtension format["9:UTC_TIME:%1",_realTimeOffset] };
+};
+
 _outputServerTime = "";
 _checkServerTime = {
-	_currServerTime = call compile ("real_date" callExtension "+"); _currServerTimeHour = _currServerTime select 3; _currServerTimeMin = _currServerTime select 4; _currServerTimeSec = _currServerTime select 5;
+	_currServerTime = call compile ("" call FN_CALL_ExtDB_TIME);
+	_currServerTimeArray = _currServerTime select 1;
+	_currServerTimeHour = _currServerTimeArray select 3; 
+	_currServerTimeMin  = _currServerTimeArray select 4; 
+	_currServerTimeSec  = _currServerTimeArray select 5;		
 	if (_this == "HHMMSS") then {
 		_outputServerTime = format ["%1:%2:%3", _currServerTimeHour call _doubleDigits, _currServerTimeMin call _doubleDigits, _currServerTimeSec call _doubleDigits];
 	}
